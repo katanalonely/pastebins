@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>katana.com</title>
+  <style>
+    :root {
+      --bg: #000;
+      --text: #fff;
+      --accent: red;
+      --neon-white: #ffffff;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: monospace;
+      overflow-x: hidden;
+      scroll-behavior: smooth;
+    }
+
+    /* Анимированный туман */
+    .fog {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 200%;
+      height: 200%;
+      background: url('https://i.gifer.com/7VE.gif') repeat;
+      background-size: cover;
+      opacity: 0.05;
+      animation: fogMove 120s linear infinite;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    @keyframes fogMove {
+      from { transform: translate(0, 0); }
+      to { transform: translate(-50%, -50%); }
+    }
+
+    .logo {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      z-index: 1000;
+    }
+
+    .logo img {
+      width: 50px;
+      height: 50px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px var(--neon-white), 0 0 20px var(--neon-white), 0 0 30px var(--neon-white);
+    }
+
+    .username {
+      font-size: 20px;
+      text-shadow: 0 0 5px var(--accent);
+      display: flex;
+      align-items: center;
+      margin-left: 10px;
+    }
+
+    .verified {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      margin-left: 6px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Twitter_Verified_Badge.svg/1200px-Twitter_Verified_Badge.svg.png') no-repeat center;
+      background-size: contain;
+      filter: brightness(300%) grayscale(100%);
+    }
+
+    .wave-wrapper {
+      position: relative;
+      width: 100%;
+      height: 100px;
+      overflow: hidden;
+      margin-top: 120px;
+    }
+
+    .wave-svg {
+      width: 100%;
+      height: 100%;
+      animation: waveFloat 4s ease-in-out infinite;
+    }
+
+    @keyframes waveFloat {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(8px); }
+      100% { transform: translateY(0); }
+    }
+
+    .window {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #111;
+      border: 2px solid var(--accent);
+      border-radius: 15px;
+      box-shadow: 0 0 20px var(--accent);
+      position: relative;
+      z-index: 1;
+    }
+
+    .editor-card {
+      opacity: 0;
+      transform: translateY(40px);
+      transition: all 0.7s ease-out;
+      background: #111;
+      border: 2px solid white;
+      box-shadow: 0 0 15px white, 0 0 25px white;
+      border-radius: 15px;
+      padding: 20px;
+      position: relative;
+    }
+
+    .editor-card.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .editor-card .card-header {
+      font-size: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .editor-card .card-header .verified {
+      width: 18px;
+      height: 18px;
+      margin-left: 8px;
+      background: url('https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Twitter_Verified_Badge.svg/1200px-Twitter_Verified_Badge.svg.png') no-repeat center;
+      background-size: contain;
+      filter: brightness(300%) grayscale(100%);
+    }
+
+    .editor-card p {
+      margin: 5px 0;
+    }
+
+    .editor-card img {
+      width: 100%;
+      max-height: 250px;
+      object-fit: cover;
+      border-radius: 10px;
+      margin-top: 10px;
+    }
+
+    a.tg-button {
+      display: inline-block;
+      margin-top: 10px;
+      background: red;
+      color: white;
+      padding: 10px 20px;
+      text-decoration: none;
+      border-radius: 10px;
+      box-shadow: 0 0 10px red, 0 0 20px red;
+      transition: transform 0.2s ease;
+    }
+
+    a.tg-button:hover {
+      transform: scale(1.05);
+    }
+
+    /* Модалка */
+    .modal-overlay {
+      position: fixed;
+      z-index: 9999;
+      top: 0; left: 0;
+      width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal {
+      background: #111;
+      border: 2px solid white;
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 0 15px white, 0 0 30px white;
+      max-width: 400px;
+      width: 90%;
+      animation: fadeIn 1s ease;
+    }
+
+    .modal h2 {
+      margin-bottom: 10px;
+      color: white;
+      font-size: 22px;
+    }
+
+    .modal p {
+      font-size: 14px;
+      color: #ccc;
+      margin-bottom: 20px;
+    }
+
+    .modal button {
+      background: red;
+      color: white;
+      padding: 10px 20px;
+      margin: 0 10px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 0 10px red, 0 0 20px red;
+      transition: transform 0.2s ease;
+    }
+
+    .modal button:hover {
+      transform: scale(1.05);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: scale(0.95); }
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    @media (max-width: 768px) {
+      .window {
+        margin: 20px 10px;
+        padding: 15px;
+      }
+
+      .logo img {
+        width: 40px;
+        height: 40px;
+      }
+
+      .username {
+        font-size: 16px;
+      }
+
+      .editor-card img {
+        max-height: 180px;
+      }
+
+      a.tg-button {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+
+      .editor-card .card-header {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="fog"></div>
+
+  <!-- МОДАЛКА -->
+  <div id="modal" class="modal-overlay">
+    <div class="modal">
+      <h2>Уведомление</h2>
+      <p>Сайт создан для услуг: создание ботов или сайтов/лендингов для продаж.
+      Сайт не нарушает правила ФАО и Google.</p>
+      <div>
+        <button onclick="acceptModal()">Принять</button>
+        <button onclick="declineModal()">Отклонить</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Логотип и имя -->
+  <div class="logo">
+    <img src="https://i.pinimg.com/736x/5c/af/48/5caf48bd909e3da0da1680a54e4f16b0.jpg" alt="Logo" />
+    <div class="username">kantaa <span class="verified"></span></div>
+  </div>
+
+  <!-- Анимированная волна -->
+  <div class="wave-wrapper">
+    <svg class="wave-svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+      <path d="M0,40 C150,100 350,0 600,60 C850,120 1050,20 1200,80 L1200,0 L0,0 Z" fill="white">
+        <animateTransform attributeName="transform" attributeType="XML" type="translate" from="0,0" to="0,10" dur="4s" repeatCount="indefinite" />
+      </path>
+    </svg>
+  </div>
+
+  <!-- Контент -->
+  <div class="window">
+    <div class="editor-card" id="priceCard">
+      <div class="card-header">katana <span class="verified"></span></div>
+      <p><strong>Telegram Бот:</strong> 1500 грн</p>
+      <p><strong>Сайт/Лендинг:</strong> 2000 - 5000 грн</p>
+      <a class="tg-button" href="https://t.me/katanalow" target="_blank">Написать в Telegram</a>
+      <img src="https://i.pinimg.com/originals/3c/aa/c6/3caac6a5bffde6a9dfa07d65d2d35f11.gif" alt="GIF прайс">
+    </div>
+  </div>
+
+  <!-- Анимация появления карточки -->
+  <script>
+    window.addEventListener("scroll", () => {
+      const card = document.getElementById("priceCard");
+      const rect = card.getBoundingClientRect();
+      if (rect.top < window.innerHeight - 100) {
+        card.classList.add("visible");
+      }
+    });
+
+    function acceptModal() {
+      document.getElementById('modal').style.display = 'none';
+    }
+
+    function declineModal() {
+      window.close();
+      alert("Закройте вкладку вручную, если она не закрылась автоматически.");
+    }
+  </script>
+</body>
+</html>
